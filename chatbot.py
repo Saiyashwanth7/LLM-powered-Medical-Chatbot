@@ -6,6 +6,9 @@ import re
 from typing import Dict, List, Any, Optional
 import requests
 import time
+# Streamlit app for an AI-powered medical assistant chatbot
+# Combines OpenRouter LLM for conversation and RapidAPI for diagnosis
+# Provides dynamic questioning, emergency detection, and a health assessment summary
 
 class LLMMedicalChatbot:
     def __init__(self):
@@ -77,6 +80,9 @@ Always maintain a caring, professional tone and remind users this is preliminary
 
     def call_openrouter_api(self, messages: List[Dict], max_tokens: int = 500) -> Optional[str]:
         """Call OpenRouter API for LLM responses."""
+        # Construct request headers for the OpenRouter endpoint
+# Note: Replace 'your-repo' with your actual GitHub/app URL
+
         try:
             # Get API key from secrets or manual input
             api_key = st.secrets.get("OPENROUTER_API_KEY") or st.session_state.get("openrouter_api_key")
@@ -122,7 +128,9 @@ Always maintain a caring, professional tone and remind users this is preliminary
             return None
 
     def extract_medical_data(self, conversation_text: str) -> Dict:
-        """Extract structured medical data from conversation using LLM."""
+        # Regex is used to find the first JSON-looking object in LLM response
+# This helps handle cases where LLM may include extra text or formatting
+
         extraction_prompt = f"""
         Based on the following medical conversation, extract and structure the key medical information in JSON format.
         Extract only information that was explicitly mentioned by the user.
@@ -248,6 +256,8 @@ Always maintain a caring, professional tone and remind users this is preliminary
             {"role": "system", "content": "You are a medical assessment AI providing preliminary health evaluations. Always emphasize the need for professional medical consultation."},
             {"role": "user", "content": assessment_prompt}
         ]
+        # If diagnosis is unavailable, LLM will still generate an advisory report
+        # Clearly states urgency level and next steps, but never gives a final diagnosis
 
         try:
             assessment = self.call_openrouter_api(messages, max_tokens=1200)
@@ -361,7 +371,9 @@ Always maintain a caring, professional tone and remind users this is preliminary
             return 0.0
 
 def main():
-    """Main Streamlit application."""
+    # Set up the Streamlit UI, including the sidebar, chat display, and control buttons
+    # Handles user input, stores messages, triggers LLM response, and shows assessment
+
     st.set_page_config(
         page_title="AI Medical Health Assistant",
         page_icon="🤖🏥",
